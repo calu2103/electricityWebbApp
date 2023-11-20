@@ -1,0 +1,161 @@
+﻿@using DSU23_G5.ViewModels;
+@using Newtonsoft.Json;
+@model DisplayChartViewModel;
+@{
+    ViewData["Title"] = "Startsida - ";
+}
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+    <meta charset="UTF-8" />
+    <link href="~/css/styleIndex.css" rel="stylesheet" />
+
+</head>
+<body>
+    <div class="navigation header-nav">
+        <nav>
+            <ul>
+                <li style="background-color: #3b77b8;"><a class="nav-active" asp-controller="Home" asp-action="Index">Startsida</a></li>
+                <li><a class="nav-inactive" asp-controller="ConsumerItems" asp-action="Index">Mina enheter</a></li>
+            </ul>
+        </nav>
+    </div>
+
+    <div class="container">
+        <form class="items-container">
+
+            <div class="home-group">
+                <input type="radio" id="home-one" name="home" value="homeOne" onclick="saveSelectedHome()" @(ViewBag.SelectedHome == "homeOne" ? "checked" : "") />
+                <label class="radio-btn" for="home-one">Hem</label>
+                <input type="radio" id="home-two" name="home" value="homeTwo" onclick="saveSelectedHome()" @(ViewBag.SelectedHome == "homeTwo" ? "checked" : "") />
+                <label class="radio-btn" for="home-two">Sommarstugan</label>
+            </div>
+
+            <div class="radio-group">
+                <div class="items-container">
+                    <input type="radio" id="option-one" name="selector" value="viewDay" onClick="saveSelectedResolution()" @(ViewBag.SelectedResolution == "viewDay" ? "checked" : "") />
+                    <label class="radio-btn" for="option-one">Dag</label>
+                    <input type="radio" id="option-two" name="selector" value="viewMonth" onClick="saveSelectedResolution()" @(ViewBag.SelectedResolution == "viewMonth" ? "checked" : "") />
+                    <label class="radio-btn" for="option-two">Månad</label>
+                    <input type="radio" id="option-three" name="selector" value="viewYear" onClick="saveSelectedResolution()" @(ViewBag.SelectedResolution == "viewYear" ? "checked" : "") />
+                    <label class="radio-btn" for="option-three">År</label>
+                </div>
+            </div>
+            <div class="selectors">
+                <select class="chart-selector" name="day" id="day" style="display:none"></select>
+                <select class="chart-selector" name="month" id="month" style="display:none"></select>
+                <select class="chart-selector" name="year" id="year" style="display:none"></select>
+            </div>
+
+
+            <button class="chart-btn" asp-action="UpdateChart">Visa pris och förbrukning</button>
+
+
+            <div style="display:flex; flex-direction:column; width:100%;" >
+            
+            
+            
+            <a class="download-btn" asp-action="DownloadChart">Ladda ner data</a>
+            </div>
+
+        </form>
+        <div>
+            @{
+                if (Model.SelectedDate != null)
+                {
+                    if (!string.IsNullOrEmpty(Model.SelectedDate))
+                    {
+                        if ((@ViewBag.SelectedHome) == "homeOne")
+                        {
+                            <span class="text-danger">Grafen visar värden för: @Model.SelectedDate. <br> (Hemmet: Centralgatan 1, Centralen) </span>
+                        }
+                        if ((@ViewBag.SelectedHome) == "homeTwo")
+                        {
+                            <span class="text-danger">Grafen visar värden för: @Model.SelectedDate. <br> (Sommarstugan: Skogsvägen 2, Skogen) </span>
+                        }
+                    }
+                }
+            }
+        </div>
+        <script>
+            // Toggles dropdowns for dateselection based on selected resolution (day/month/year).
+            function hideShow(type) {
+
+                if (type === 1) {
+                    document.getElementById('day').style.display = 'block';
+                    document.getElementById('month').style.display = 'block';
+                    document.getElementById('year').style.display = 'block';
+                }
+                else if (type === 2) {
+                    document.getElementById('month').style.display = 'block';
+                    document.getElementById('year').style.display = 'block';
+                    document.getElementById('day').style.display = 'none';
+                    console.log(type);
+                }
+                else if (type === 3) {
+                    document.getElementById('year').style.display = 'block';
+                    document.getElementById('day').style.display = 'none';
+                    document.getElementById('month').style.display = 'none';
+                    console.log(type);
+                }
+            }
+
+            // Remembers selected resolution (day/month/year) when updating chart.
+            function saveSelectedResolution() {
+                var selectedResolution = document.querySelector('input[name="selector"]:checked').value;
+                localStorage.setItem("selectedResolution", selectedResolution);
+
+                if (localStorage.getItem("selectedResolution") == null) {
+                    localStorage.setItem("selectedResolution", selectedResolution);
+                    document.getElementById('option-one').checked = true;
+                    hideShow(1);
+                }
+                else if (localStorage.getItem("selectedResolution") == "viewDay") {
+                    localStorage.setItem("selectedResolution", selectedResolution);
+                    document.getElementById('option-one').checked = true;
+                    hideShow(1);
+                }
+                else if (localStorage.getItem("selectedResolution") == "viewMonth") {
+                    localStorage.setItem("selectedResolution", selectedResolution);
+                    document.getElementById('option-two').checked = true;
+                    hideShow(2);
+                }
+                else if (localStorage.getItem("selectedResolution") == "viewYear") {
+                    localStorage.setItem("selectedResolution", selectedResolution);
+                    document.getElementById('option-three').checked = true;
+                    hideShow(3);
+                }
+            }
+            saveSelectedResolution();
+
+            function saveSelectedHome() {
+                var selectedHome = document.querySelector('input[name="home"]:checked').value;
+                localStorage.setItem("selectedHome", selectedHome);
+
+                if (localStorage.getItem("selectedHome") == null) {
+                    localStorage.setItem("selectedHome", selectedHome);
+            @(ViewBag.SelectedHome = "homeOne");
+                    document.getElementById('home-one').checked = true;
+                }
+                else if (localStorage.getItem("selectedHome") == "homeTwo") {
+                    localStorage.setItem("selectedHome", selectedHome);
+            @(ViewBag.SelectedHome = "homeTwo");
+                    document.getElementById('home-two').checked = true;
+                }
+                else if (localStorage.getItem("selectedHome") == "homeOne") {
+                    localStorage.setItem("selectedHome", selectedHome);
+            @(ViewBag.SelectedHome = "homeOne");
+                    document.getElementById('home-one').checked = true;
+                }
+            }
+            saveSelectedHome();
+
+        </script>
+
+    </div>
+    @await Html.PartialAsync("_Chart")
+    
+
+</body>
+<script src="~/js/site.js"></script>
+</html>

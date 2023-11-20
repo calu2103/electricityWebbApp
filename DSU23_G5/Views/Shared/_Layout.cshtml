@@ -1,0 +1,55 @@
+﻿<!DOCTYPE html>
+<html lang="sv">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script src="https://kit.fontawesome.com/cec567ea08.js"
+            crossorigin="anonymous"></script>
+    <link href="~/css/style.css" rel="stylesheet" />
+    <title>@ViewData["Title"] Elprojektet Grupp 5</title>
+</head>
+ 
+<header>
+    
+    <h1>
+        Elkollen
+    </h1>
+    <div>
+        <p>
+        @{
+            if (Model.SpotPriceRightNow != null)
+            {
+                <label class="info">Spotpris just nu: @Model.SpotPriceRightNow öre</label>
+
+            }
+        }
+        </p>
+
+        <p>
+        @{
+            if (Model.CheapestHour != null)
+            {
+                <label class="info">Kommande lägsta spotpris idag kl: @Model.CheapestHour</label>
+
+            }
+        }
+        </p>
+    </div>
+
+    
+</header>
+
+<body>
+    
+    <div class="flex-container">
+        @RenderBody()
+    </div>
+
+</body>
+
+<footer>
+
+   
+
+</footer>
+</html>

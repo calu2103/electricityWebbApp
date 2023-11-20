@@ -1,0 +1,24 @@
+﻿@model ErrorViewModel
+@{
+    ViewData["Title"] = "Error";
+}
+
+<h1 class="text-danger">Felmeddelande</h1>
+<h2 class="text-danger">Ett fel inträffade.</h2>
+
+@if (Model.ShowRequestId)
+{
+    <p>
+        <strong>Request ID:</strong> <code>@Model.RequestId</code>
+    </p>
+    <p>
+        <span class="text-danger">Beskrivning av felet: @Model.ErrorMessage</span>
+        <a href="@Url.Action("Index", Model.FormerPage)">
+             <h2 class="text-danger">Klicka här för att ladda om sidan</h2>
+        </a>
+    </p>
+}
+
+
+
+

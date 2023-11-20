@@ -1,0 +1,177 @@
+﻿@*Byt ut nedan "@using" & "@model" till aktuella    *@
+@using DSU23_G5.ViewModels;
+@model DisplayChartViewModel;
+
+<link href="~/css/style.css" rel="stylesheet" />
+
+
+
+
+
+<div class="chart-container">
+    <canvas id="myChart"></canvas>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+    const dataChart = document.getElementById('myChart');
+
+
+    var timeFrame = [];
+    var spotPriceData = [];
+    var consumptionData = [];
+
+
+
+    @if (Model?.Chart?.SpotPrice?.Count() > 0)
+    {
+        foreach (var item in Model.Chart.SpotPrice)
+        {
+            @:var data = parseFloat(@item);
+            @:spotPriceData.push(data);
+        }
+    }
+
+    @if (Model?.Chart?.Labels?.Count() > 0)
+    {
+        foreach (var item in Model.Chart.Labels)
+        {
+            // If chart shows day view (24 values) adjust hours to start at 00:00 and end at 23:00
+            if (Model.Chart.Labels.Length == 24)
+            {
+                if (item.Length == 1)
+                {
+                    @:timeFrame.push("0" + (@item-1));
+                }
+                // Add a "0" for when value is 10 otherwise it shows as "... 08, 9, 10 ..."
+                else if (item == "10")
+                {
+                    @:timeFrame.push("0" + (@item-1));
+                }
+                else
+                {
+                    @:timeFrame.push(@item-1);
+                }
+            }
+
+            // If not in day view, just push the items as labels
+            else
+            {
+                @:timeFrame.push(@item);
+            }
+        }
+
+    }
+    @if (Model?.Chart?.Consumption?.Count() > 0)
+    {
+        foreach (var item in Model.Chart.Consumption)
+        {
+            @:consumptionData.push(@item);
+        }
+    }
+
+
+    /*sets the stepsize based on the highest value of spotprice and consumption data and adds a 6th of that value
+        to the stepsize so that the data doest hit the top of the chart*/
+    let stepSpot = Math.max(...spotPriceData) / 7 + Math.max(...spotPriceData) / 6;
+    let stepCons = Math.max(...consumptionData) / 7 + Math.max(...consumptionData) / 6;
+
+
+
+    //A function that gets the color of the line and bar bordercolor and applies it to the tooltip background
+    function colorItems(tooltipItem) {
+        const tooltipBackgroundColor = tooltipItem.tooltip.labelColors[0].borderColor
+        return tooltipBackgroundColor;
+    }
+
+    //Configuration of the chart
+    const config = {
+        data: {
+            labels: timeFrame,
+            datasets: [{
+                type: 'line',
+                label: 'Spotpris (öre)',
+                data: spotPriceData,
+                borderWidth: 3,
+                pointBackgroundColor: 'rgb(181, 51, 22)',
+                backgroundColor: 'rgb(181, 51, 22)',
+                borderColor: 'rgb(181, 51, 22)',
+                tension: 0.4,
+                yAxisID: 'spotprice',
+            }, {
+                type: 'bar',
+                label: 'Förbrukning kWh',
+                data: consumptionData,
+                backgroundColor: 'rgb(93, 118, 153)',
+                borderColor: 'rgb(93, 118, 153)',
+                yAxisID: 'y'
+            }]
+        },
+        options: {
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    type: 'linear',
+                    position: 'left',
+                    ticks: {
+                        precision: 1,
+                        stepSize: stepCons,
+                        color: 'white'
+                    },
+                    title: {
+                        display: true,
+                        text: 'Förbrukning kWh',
+                        color: 'white',
+                    }
+                },
+                spotprice: {
+                    beginAtZero: true,
+                    type: 'linear',
+                    position: 'right',
+                    grid: {
+                        drawOnChartArea: false
+                    },
+                    ticks: {
+                        precision: 0,
+                        stepSize: stepSpot,
+                        color: 'white'
+                    },
+                    title: {
+                        display: true,
+                        text: 'Spotpris (öre)',
+                        color: 'white',
+                    }
+                },
+                x: {
+                    grid: {
+                        display: false,
+                    },
+                    ticks: {
+                        color: 'white'
+                    }
+                },
+            },
+            plugins: {
+                tooltip: {
+                    displayColors: false,
+                    yAlign: 'bottom',
+                    backgroundColor: colorItems
+                },
+                legend: {
+                    reverse: true,
+                    labels: {
+                        color: 'white'
+                    }
+                }
+            }
+        }
+    };
+
+    //Chart is created by the specifications set by config and applied to a canvas with the class myChart
+    const myChart = new Chart(document.getElementById('myChart'), config);
+
+
+
+
+</script>

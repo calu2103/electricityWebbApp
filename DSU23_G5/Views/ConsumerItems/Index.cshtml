@@ -1,0 +1,194 @@
+﻿@using DSU23_G5.ViewModels;
+@model ConsumerItemsViewModel;
+@{
+    ViewData["Title"] = "Mina enheter - ";
+}
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+    <meta charset="UTF-8" name="viewport" content="width=device-width, initial-scale=1">
+    <link href="~/css/styleIndex.css" rel="stylesheet" />
+    <link href='https://fonts.googleapis.com/css?family=Poppins' rel='stylesheet'>
+    <script src="https://kit.fontawesome.com/155f0e6c6f.js" crossorigin="anonymous"></script>
+
+</head>
+
+<body>
+    <div class="navigation header-nav">
+        <nav>
+            <ul>
+                <li><a class="nav-inactive2" asp-controller="Home" asp-action="Index">Startsida</a></li>
+                <li style="background-color: #3b77b8;"><a class="nav-active2" asp-controller="ConsumerItems" asp-action="Index">Mina enheter</a></li>
+            </ul>
+        </nav>
+    </div>
+    <a type="button" class="collapsible coll-info" style="padding:0; background-color:#2c3136; cursor:default;">
+        <h2 class="title" style="margin:0; background-color:#2c3136;">Håll koll på din konsumtion</h2>
+    
+        <div class="item-content consumer-info">
+            <i class="fa-solid fa-circle-info" style="font-size: 30px; cursor:pointer;"></i>
+        </div>
+    </a>
+    <div class="content" style="background-color: #2c3136;">
+        <div class="consumer-items-info">
+          <p class="page-info">Här kan du lägga till enheter för att hitta deras optimala starttid.</p>
+          <p class="page-info">Systemet beräknar kostnaden av enheternas förbrukningstid utifrån dagens spotpriser och väljer den billigaste starttiden.</p>
+          <p class="page-info">Morgondagens starttider blir tillgängliga tidigast klockan 13:00.</p>
+        </div>
+    </div>
+
+    
+ 
+        <div class="consumption-items">
+            
+            <form style="display:flex; justify-content:center;">
+            <div class="home-group" style="max-width: 20rem;">
+                
+
+                <input type="radio" id="option-one" name="selector" value="viewToday" onClick="this.form.submit()" checked>
+                <label class="radio-btn" for="option-one" style="max-width:10rem;">Idag</label>
+                <input type="radio" id="option-two" name="selector" value="viewTomorrow" onClick="this.form.submit()" >
+                <label class="radio-btn" for="option-two" style="max-width:10rem;">Imorgon</label>
+                
+                
+            </div>
+            </form>
+
+            
+            <h3 class="title">Mina enheter</h3>
+
+            @foreach (var item in Model.Items)
+            {
+            <div class="item">
+                <a type="button" class="collapsible">
+                    <div class="item-content">
+                        <h3>@item.Name</h3>
+                        <p>Starttid: @item.OptimalStartTime</p>
+                    </div>
+                </a>
+                <div class="content">
+                    <div class="content-items">
+                        <p style="color: #c9c9c2;">Om du startar användningen klockan <span style="font-size: 1.2em; color: #f0f0e7; display:inline;">@item.OptimalStartTime</span>
+                            kommer du att betala <span style="font-size: 1.2em; color: #f0f0e7; display:inline;">@item.Cost<span>kr</span></span></p>
+
+                        <form>
+                            <div class="timepicker">
+                            
+                                <label for="operatingTime">Förbrukningstid: </label>
+                                <select name="operatingTime" id="to" style="max-width:7rem">
+                                    <option value="" disabled selected hidden>@item.OperatingTime<span>h</span></option>
+                                    <option value="1">1h</option>
+                                    <option value="2">2h</option>
+                                    <option value="3">3h</option>
+                                    <option value="4">4h</option>
+                                    <option value="5">5h</option>
+                                    <option value="6">6h</option>
+                                    <option value="7">7h</option>
+                                    <option value="8">8h</option>
+                                    <option value="9">9h</option>
+                                    <option value="10">10h</option>
+                                    <option value="11">11h</option>
+                                    <option value="12">12h</option>
+                                </select>
+                            </div>
+                            <div class="item-btns">
+                            
+                                <input type="hidden" value="@item.Name" id="remove" name="name">
+                                    <button type="submit" class="remove-btn" name="name" asp-action="RemoveItem">Ta bort</button>
+
+
+                                <input type="hidden" value="@item.Name" id="change" name="operatingTime">
+                                <button type="submit" class="add-btn" name="operatingTime" asp-action="EditItem">Spara</button>
+                           
+                            </div>
+                         </form>
+                    </div>
+                </div>
+            </div>
+
+            }
+            
+                <div class="item">
+                    <a type="button" class="collapsible">
+                        <div class="item-content">
+                            <h3>Lägg till enhet</h3>
+                            <i class="fa-solid fa-plus" style="font-size: 20px;"></i>
+                        </div>
+                    </a>
+                    <div class="content">
+                        <div class="add-content">
+                            <form class="add-item-form">
+                                <div class="input-row">
+                                    <p style="display: flex;">Namn:</p>
+                                    <input type="text" id="add" name="name" placeholder="Namn">
+                                </div>
+                                <div class="input-row">
+                                    <p>Förbrukning:</p>
+                                    <input type="text" id="add" name="kWh" placeholder="kW">
+                            
+                                </div>
+                                <div class="timepicker">
+                                    <label for="hours">Förbrukningstid (timmar): </label>
+                                    <select name="operatingTime" id="hours" style="max-width:7rem">
+                                        <option value="1">1h</option>
+                                        <option value="2">2h</option>
+                                        <option value="3">3h</option>
+                                        <option value="4">4h</option>
+                                        <option value="5">5h</option>
+                                        <option value="6">6h</option>
+                                        <option value="7">7h</option>
+                                        <option value="8">8h</option>
+                                        <option value="9">9h</option>
+                                        <option value="10">10h</option>
+                                        <option value="11">11h</option>
+                                        <option value="12">12h</option>
+                                        </select>
+                                </div>
+                        <button type="submit" class="add-btn" asp-action="CreateItem">Lägg till</button>
+                            </form>
+                        </div>
+
+
+                    </div>
+                </div>
+            
+        </div>
+        
+    <script>
+        var coll = document.getElementsByClassName("collapsible");
+
+        var i;
+
+        for (i = 0; i < coll.length; i++) {
+            coll[i].addEventListener("click", function () {
+                this.classList.toggle("collapse-active");
+                var content = this.nextElementSibling;
+                if (content.style.display === "flex") {
+                    content.style.display = "none";
+                } else {
+                    content.style.display = "flex";
+                }
+
+            });
+        }
+        function hideTomorrow() {
+            let currentDay = new Date();
+            let hourOfTheDay = currentDay.getHours();
+            let tomorrowBtn = document.getElementById("option-two");
+
+            if (hourOfTheDay < 13) {
+                tomorrowBtn.disabled = true;
+            }
+
+            else {
+                tomorrowBtn.disabled = false;
+            }
+        }
+
+        hideTomorrow();
+        
+
+    </script>
+
+</body>
+</html>
